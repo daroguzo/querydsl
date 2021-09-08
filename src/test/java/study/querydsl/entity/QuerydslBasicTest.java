@@ -629,5 +629,66 @@ public class QuerydslBasicTest {
     private BooleanExpression allEq(String usernameCond, Integer ageCond) {
         return usernameEq(usernameCond).and(ageEq(ageCond));
     }
+
+    @Test
+    public void bulkUpdate() {
+        long count = queryFactory
+                .update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(28))
+                .execute();
+
+        // 벌크 연산 후에는 영속성 컨텍스트 초기화 필요
+        em.flush();
+        em.clear();
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .fetch();
+
+        for (Member m : result) {
+            System.out.println("Member = " + m);
+        }
+    }
+
+    @Test
+    public void bulkUpdate2() {
+        long count = queryFactory
+                .update(member)
+                .set(member.age, member.age.add(1))
+                .execute();
+
+        // 벌크 연산 후에는 영속성 컨텍스트 초기화 필요
+        em.flush();
+        em.clear();
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .fetch();
+
+        for (Member m : result) {
+            System.out.println("Member = " + m);
+        }
+    }
+
+    @Test
+    public void bulkUpdate3() {
+        long count = queryFactory
+                .delete(member)
+                .where(member.age.gt(18))
+                .execute();
+
+        // 벌크 연산 후에는 영속성 컨텍스트 초기화 필요
+        em.flush();
+        em.clear();
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .fetch();
+
+        for (Member m : result) {
+            System.out.println("Member = " + m);
+        }
+    }
 }
 
